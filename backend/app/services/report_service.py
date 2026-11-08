@@ -1,12 +1,10 @@
 import io
+import os
 import tempfile
 from pathlib import Path
 from typing import Any
 
-import matplotlib
-# Configuración del backend 'Agg' para renderizado headless sin interfaz gráfica
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir())
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -113,7 +111,9 @@ class ReportService:
     @classmethod
     def _generate_category_pie_chart(cls, category_distribution: list[Any]) -> io.BytesIO:
         """Genera un gráfico de pastel circular corporativo en memoria."""
-        plt.switch_backend("Agg")
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
 
         if not category_distribution:
             # Gráfico de respaldo si no hay datos

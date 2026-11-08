@@ -5,6 +5,11 @@ from app.api.v1.endpoints import nlp, reports, upload
 api_router = APIRouter()
 
 # Registro de routers por dominio / funcionalidad
+# Permite tanto /api/v1/upload como /api/v1/reports/upload
+api_router.include_router(
+    upload.router,
+    tags=["Ingesta y Carga de Reportes"],
+)
 api_router.include_router(
     upload.router,
     prefix="/reports",

@@ -1,7 +1,6 @@
 import json
 from typing import Any
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics.pairwise import cosine_distances
 from sqlalchemy import delete, select, update
@@ -17,16 +16,17 @@ class NLPService:
     utilizando embeddings multilingües, clustering aglomerativo y cálculo del Medoide representativo.
     """
 
-    _model: SentenceTransformer | None = None
+    _model: Any = None
     _model_name: str = "paraphrase-multilingual-MiniLM-L12-v2"
 
     @classmethod
-    def get_model(cls) -> SentenceTransformer:
+    def get_model(cls) -> Any:
         """
         Carga el modelo SentenceTransformer de HuggingFace como Singleton en memoria
         para optimizar la latencia y evitar recargar los pesos en cada petición.
         """
         if cls._model is None:
+            from sentence_transformers import SentenceTransformer
             cls._model = SentenceTransformer(cls._model_name)
         return cls._model
 

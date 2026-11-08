@@ -26,3 +26,7 @@ data/raw/*.xls
 .idea/
 .DS_Store
 Thumbs.db
+
+# Frontend Node.js
+node_modules/
+dist/
