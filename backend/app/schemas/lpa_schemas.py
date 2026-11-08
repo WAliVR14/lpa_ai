@@ -1,5 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
+
 
 class DiscrepancyRaw(BaseModel):
     """
@@ -17,5 +18,50 @@ class DiscrepancyRaw(BaseModel):
     raw_description: str
     closure_solution: str
 
-    # Permite a Pydantic leer diccionarios u objetos de bases de datos de forma nativa
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UploadResponse(BaseModel):
+    """
+    Respuesta estructurada tras la ingesta exitosa de un archivo Excel de discrepancias LPA.
+    """
+    report_id: int
+    period: str
+    filename: str
+    file_hash: str
+    total_discrepancies: int
+    areas_registered: int
+    categories_registered: int
+    uploaded_at: datetime
+    message: str = "Reporte LPA procesado e insertado exitosamente."
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TopOffenderSummary(BaseModel):
+    """
+    Resumen de un Top Offender (clúster semántico) detectado.
+    """
+    id: int
+    rank_position: int
+    category_id: int
+    category_name: str
+    canonical_description: str
+    occurrence_count: int
+    percentage_of_total: float
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ClusterReportResponse(BaseModel):
+    """
+    Respuesta tras la ejecución del motor de agrupamiento semántico NLP.
+    """
+    report_id: int
+    period: str
+    total_discrepancies: int
+    total_clusters: int
+    top_offenders: list[TopOffenderSummary]
+    message: str
+
     model_config = ConfigDict(from_attributes=True)

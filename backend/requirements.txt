@@ -18,3 +18,14 @@ sqlalchemy>=2.0.36
 # --- Testing ---
 pytest>=8.3.0
 httpx>=0.27.2
+
+# --- Motor IA / NLP y Agrupamiento Semántico ---
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+sentence-transformers>=2.2.2
+scikit-learn>=1.3.0
+
+# --- Reportería Ejecutiva y Generación de Presentaciones ---
+python-pptx>=0.6.22
+matplotlib>=3.9.0
+
