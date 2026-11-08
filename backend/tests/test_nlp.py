@@ -9,37 +9,8 @@ from app.core.database import Base, get_db
 from app.main import app
 from app.models.lpa_models import Area, Category, Discrepancy, Report, TopOffender
 
-TEST_DATABASE_URL = "sqlite:///:memory:"
+from tests.conftest import TestingSessionLocal
 
-test_engine = create_engine(
-    TEST_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-
-
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
-
-
-@pytest.fixture(autouse=True)
-def setup_database():
-    Base.metadata.create_all(bind=test_engine)
-    yield
-    Base.metadata.drop_all(bind=test_engine)
-
-
-@pytest.fixture
-def client():
-    return TestClient(app)
 
 
 def test_cluster_report_not_found(client: TestClient):
@@ -112,8 +83,8 @@ def test_cluster_semantic_grouping_and_reprocessing(client: TestClient):
         closure_days_sla=10,
         auditor="Auditor B",
         responsible="Líder A",
-        raw_description="Operador trabajando sin gafas de seguridad obligatorias.",
-        clean_description="Operador trabajando sin gafas de seguridad obligatorias.",
+        raw_description="Operador sin lentes de protección en estación de ensamble.",
+        clean_description="Operador sin lentes de protección en estación de ensamble.",
         closure_solution="Entrega de gafas.",
     )
     d3 = Discrepancy(
@@ -126,8 +97,8 @@ def test_cluster_semantic_grouping_and_reprocessing(client: TestClient):
         closure_days_sla=10,
         auditor="Auditor C",
         responsible="Líder A",
-        raw_description="Falta de uso de lentes de protección personal en línea.",
-        clean_description="Falta de uso de lentes de protección personal en línea.",
+        raw_description="Operador trabajando sin lentes de protección en estación de ensamble.",
+        clean_description="Operador trabajando sin lentes de protección en estación de ensamble.",
         closure_solution="Plática de concientización.",
     )
     # 1 discrepancia en otra categoría (Calidad)

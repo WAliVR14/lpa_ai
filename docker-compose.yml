@@ -1,0 +1,57 @@
+services:
+  # ============================================================================
+  # SERVICIO BACKEND (FastAPI + SQLAlchemy + NLP Engine)
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lpa_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/lpa_aumovio.db
+      - PYTHONUNBUFFERED=1
+      - MPLCONFIGDIR=/tmp/matplotlib
+    volumes:
+      # Persistencia de la base de datos relacional SQLite
+      - lpa_data:/app/data
+      # Persistencia de los pesos descargados del modelo de lenguaje de HuggingFace
+      - huggingface_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - lpa_network
+
+  # ============================================================================
+  # SERVICIO FRONTEND (React + Vite + Tailwind + Nginx)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lpa_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - lpa_network
+
+volumes:
+  lpa_data:
+    driver: local
+  huggingface_cache:
+    driver: local
+
+networks:
+  lpa_network:
+    driver: bridge
+

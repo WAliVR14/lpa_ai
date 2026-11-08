@@ -30,3 +30,15 @@ Thumbs.db
 # Frontend Node.js
 node_modules/
 dist/
+
+# Pruebas y Cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker y temporales de contenedor
+.docker/
+docker-compose.override.yml
+*.pptx
+tmp/
+temp/
